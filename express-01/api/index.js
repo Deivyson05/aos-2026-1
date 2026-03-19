@@ -2,7 +2,7 @@ import "dotenv/config";
 import cors from "cors";
 import express from "express";
 
-import models from "./models";
+import models, { sequelize } from "./models";
 import routes from "./routes";
 
 const app = express();
@@ -33,11 +33,53 @@ app.get("/", (req, res) => {
 });
 
 const port = process.env.PORT ?? 3000;
+const eraseDatabaseOnSync = process.env.ERASE_DATABASE_ON_SYNC === "true";
 
-app.listen(port, () =>
-  console.log(
-    "Express-01 app listening on port " + port + "!\n" + process.env.MESSAGE,
-  ),
-);
+sequelize.sync({ force: eraseDatabaseOnSync }).then(async () => {
+  if (eraseDatabaseOnSync) {
+    createUsersWithMessages();
+  }
+
+  app.listen(port, () =>
+    console.log(
+      "Express-01 app listening on port " + port + "!\n" + process.env.MESSAGE,
+    ),
+  );
+});
+
+const createUsersWithMessages = async () => {
+  await models.User.create(
+    {
+      username: "rwieruch",
+      email: "rwieruch@email.com",
+      messages: [
+        {
+          text: "Published the Road to learn React",
+        },
+      ],
+    },
+    {
+      include: [models.Message],
+    },
+  );
+
+  await models.User.create(
+    {
+      username: "ddavids",
+      email: "ddavids@email.com",
+      messages: [
+        {
+          text: "Happy to release ...",
+        },
+        {
+          text: "Published a complete ...",
+        },
+      ],
+    },
+    {
+      include: [models.Message],
+    },
+  );
+};
 
 export default app;

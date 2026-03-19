@@ -5,6 +5,15 @@ import getMessageModel from "./message";
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: "postgres",
+  protocol: "postgres",
+  dialectOptions: {
+    // Necessary for SSL on NeonDB, Render.com and other providers
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
+  dialectModule: require("pg"),
 });
 
 const models = {
