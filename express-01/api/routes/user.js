@@ -13,7 +13,7 @@ router.get("/:userId", async (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  return res.send("POST HTTP method on user resource");
+  return res.send("POST HTTP method on user resource", req.body);
 });
 
 router.put("/:userId", (req, res) => {
