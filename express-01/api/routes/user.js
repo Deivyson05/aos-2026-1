@@ -1,4 +1,5 @@
 import { Router } from "express";
+import models from "../models";
 
 const router = Router();
 
@@ -12,16 +13,68 @@ router.get("/:userId", async (req, res) => {
   return res.send(user);
 });
 
-router.post("/", (req, res) => {
-  return res.send("POST HTTP method on user resource", req.body);
+router.post("/", async (req, res) => {
+  const { username, email } = req.body;
+  if (!username || !email) {
+    return res.json({
+      body: req.body,
+      text: "Está faltando informações"
+    });
+  } else {
+    await models.User.create(
+      {
+        username: username,
+        email: email,
+        messages: []
+      },
+      {
+        include: [models.Message]
+      }
+    )
+  }
+  return res.json({
+    body: req.body,
+    text: "requisicao enviada"
+  })
 });
 
-router.put("/:userId", (req, res) => {
-  return res.send(`PUT HTTP method on user/${req.params.userId} resource`);
+router.put("/:userId", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const [updated] = await User.update(req.body, {
+      where: { id }
+    });
+
+    if (updated) {
+      const user = await User.findByPk(id);
+      return res.json(user);
+    }
+
+    return res.status(404).json({ error: 'Usuário não encontrado' });
+
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao atualizar' });
+  }
 });
 
-router.delete("/:userId", (req, res) => {
-  return res.send(`DELETE HTTP method on user/${req.params.userId} resource`);
+router.delete("/:userId", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deleted = await User.destroy({
+      where: { id }
+    });
+
+    if (deleted) {
+      return res.json({ message: 'Usuário deletado' });
+    }
+
+    return res.status(404).json({ error: 'Usuário não encontrado' });
+
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao deletar' });
+  }
 });
 
 export default router;
