@@ -4,9 +4,7 @@ const router = Router();
 
 router.get("/", async (req, res) => {
   try {
-    res.status(102).json({
-      message: "processando..."
-    });
+     
     const user = await req.context.models.User.findByPk(req.context.me.id);
     return res.send(user);
   } catch (error) {

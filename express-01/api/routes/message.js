@@ -5,9 +5,7 @@ const router = Router();
 
 router.get("/", async (req, res) => {
   try {
-    res.status(102).json({
-      message: "processando..."
-    });
+     
     const messages = await req.context.models.Message.findAll();
     return res.status(200).send(messages);
   } catch (error) {
@@ -20,9 +18,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:messageId", async (req, res) => {
   try {
-    res.status(102).json({
-      message: "processando..."
-    });
+     
     const message = await req.context.models.Message.findByPk(
       req.params.messageId,
     );
@@ -37,9 +33,7 @@ router.get("/:messageId", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    res.status(102).json({
-      message: "processando..."
-    });
+     
     const message = await req.context.models.Message.create({
       text: req.body.text,
       userId: req.context.me.id,
@@ -56,9 +50,7 @@ router.post("/", async (req, res) => {
 
 router.delete("/:messageId", async (req, res) => {
   try {
-    res.status(102).json({
-      message: "processando..."
-    });
+     
     const result = await req.context.models.Message.destroy({
       where: { id: req.params.messageId },
     });
