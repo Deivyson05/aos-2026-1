@@ -4,32 +4,60 @@ import { v4 as uuidv4 } from "uuid";
 const router = Router();
 
 router.get("/", async (req, res) => {
-  const messages = await req.context.models.Message.findAll();
-  return res.send(messages);
+  try {
+    const messages = await req.context.models.Message.findAll();
+    return res.status(200).send(messages);
+  } catch (error) {
+    return res.status(500).json({
+      message: "erro interno do servidor",
+      erro: error
+    })
+  }
 });
 
 router.get("/:messageId", async (req, res) => {
-  const message = await req.context.models.Message.findByPk(
-    req.params.messageId,
-  );
-  return res.send(message);
+  try {
+    const message = await req.context.models.Message.findByPk(
+      req.params.messageId,
+    );
+    return res.status(message == null ? 404 : 304).send(message);
+  } catch (error) {
+    return res.status(500).json({
+      message: "erro interno do servidor",
+      erro: error
+    });
+  }
 });
 
 router.post("/", async (req, res) => {
-  const message = await req.context.models.Message.create({
-    text: req.body.text,
-    userId: req.context.me.id,
-  });
+  try {
+    const message = await req.context.models.Message.create({
+      text: req.body.text,
+      userId: req.context.me.id,
+    });
 
-  return res.send(message);
+    return res.status(200).send(message);
+  } catch (error) {
+    return res.status(500).json({
+      message: "erro interno do servidor",
+      erro: error
+    });
+  }
 });
 
 router.delete("/:messageId", async (req, res) => {
-  const result = await req.context.models.Message.destroy({
-    where: { id: req.params.messageId },
-  });
+  try {
+    const result = await req.context.models.Message.destroy({
+      where: { id: req.params.messageId },
+    });
 
-  return res.send(true);
+    return res.status(200).send(true);
+  } catch (error) {
+    return res.status(500).json({
+      message: "erro interno do servidor",
+      erro: error
+    });
+  }
 });
 
 export default router;
