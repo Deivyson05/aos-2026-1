@@ -5,6 +5,9 @@ const router = Router();
 
 router.get("/", async (req, res) => {
   try {
+    res.status(102).json({
+      message: "processando..."
+    });
     const users = await req.context.models.User.findAll();
     return res.status(users.length == 0 ? 204 : 200).send(users);
   } catch (error) {
@@ -17,6 +20,9 @@ router.get("/", async (req, res) => {
 
 router.get("/:userId", async (req, res) => {
   try {
+    res.status(102).json({
+      message: "processando..."
+    });
     const user = await req.context.models.User.findByPk(req.params.userId);
     return res.status(user == null? 404: 302).send(user);
   } catch (error) {
@@ -29,9 +35,12 @@ router.get("/:userId", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
+    res.status(102).json({
+      message: "processando..."
+    });
     const { username, email } = req.body;
     if (!username || !email) {
-      return res.json({
+      return res.status(400).json({
         body: req.body,
         text: "Está faltando informações"
       });
@@ -61,6 +70,9 @@ router.post("/", async (req, res) => {
 
 router.put("/:userId", async (req, res) => {
   try {
+    res.status(102).json({
+      message: "processando..."
+    });
     const { id } = req.params;
 
     const [updated] = await User.update(req.body, {
@@ -81,6 +93,9 @@ router.put("/:userId", async (req, res) => {
 
 router.delete("/:userId", async (req, res) => {
   try {
+    res.status(102).json({
+      message: "processando..."
+    });
     const { id } = req.params;
 
     const deleted = await User.destroy({
