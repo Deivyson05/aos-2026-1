@@ -1,106 +1,52 @@
 import { Router } from "express";
-import models from "../models";
 
 const router = Router();
 
 router.get("/", async (req, res) => {
-  try {
-     
-    const users = await req.context.models.User.findAll();
-    return res.status(users.length == 0 ? 204 : 200).send(users);
-  } catch (error) {
-    return res.status(500).json({
-      message: 'erro interno do servidor',
-      erro: error
-    });
-  }
+  const users = await req.context.models.User.findAll();
+  return res.status(200).send(users);
 });
 
 router.get("/:userId", async (req, res) => {
-  try {
-     
-    const user = await req.context.models.User.findByPk(req.params.userId);
-    return res.status(user == null? 404: 302).send(user);
-  } catch (error) {
-    return res.status(500).json({
-      message: 'erro interno do servidor',
-      erro: error
-    });
-  }
+  const user = await req.context.models.User.findByPk(req.params.userId);
+  if (!user) return res.status(404).send({ error: "Usuário não encontrado." });
+  
+  return res.status(200).send(user);
 });
 
 router.post("/", async (req, res) => {
-  try {
-     
-    const { username, email } = req.body;
-    if (!username || !email) {
-      return res.status(400).json({
-        body: req.body,
-        text: "Está faltando informações"
-      });
-    } else {
-      await models.User.create(
-        {
-          username: username,
-          email: email,
-          messages: []
-        },
-        {
-          include: [models.Message]
-        }
-      )
-    }
-    return res.status(201).json({
-      body: req.body,
-      text: "requisicao enviada"
-    })
-  } catch(error) {
-    return res.status(500).json({
-      message: 'erro interno do servidor',
-      erro: error
-    });
-  }
+  // Se der erro aqui, o Express 5 joga direto pro Middleware de erro!
+  const user = await req.context.models.User.create({
+    username: req.body.username,
+    email: req.body.email,
+  });
+  return res.status(201).send(user);
 });
 
 router.put("/:userId", async (req, res) => {
-  try {
-     
-    const { id } = req.params;
-
-    const [updated] = await User.update(req.body, {
-      where: { id }
-    });
-
-    if (updated) {
-      const user = await User.findByPk(id);
-      return res.status(205).json(user);
+  const [updatedRows] = await req.context.models.User.update(
+    {
+      username: req.body.username,
+      email: req.body.email,
+    },
+    {
+      where: { id: req.params.userId },
     }
-
-    return res.status(404).json({ error: 'Usuário não encontrado' });
-
-  } catch (err) {
-    res.status(500).json({ error: 'Erro ao atualizar' });
-  }
+  );
+  
+  if (updatedRows === 0) return res.status(404).send({ error: "Usuário não encontrado para atualização." });
+  
+  return res.status(200).send({ success: "Usuário atualizado com sucesso." });
 });
 
 router.delete("/:userId", async (req, res) => {
-  try {
-     
-    const { id } = req.params;
-
-    const deleted = await User.destroy({
-      where: { id }
-    });
-
-    if (deleted) {
-      return res.status(200).json({ message: 'Usuário deletado' });
-    }
-
-    return res.status(404).json({ error: 'Usuário não encontrado' });
-
-  } catch (err) {
-    res.status(500).json({ error: 'Erro ao deletar' });
-  }
+  const result = await req.context.models.User.destroy({
+    where: { id: req.params.userId },
+  });
+  
+  if (result === 0) return res.status(404).send({ error: "Usuário não encontrado para exclusão." });
+  
+  return res.status(200).send({ success: "Usuário deletado com sucesso." });
 });
 
 export default router;

@@ -32,6 +32,23 @@ app.get("/", (req, res) => {
   );
 });
 
+app.use((err, req, res, next) => {
+  console.error("Erro capturado pelo Middleware:", err.name);
+
+  if (err.name === 'SequelizeUniqueConstraintError') {
+    return res.status(409).send({ error: "Este registro já existe (conflito de dados)." });
+  }
+
+  // 2. Erro de Validação (ex: Faltou preencher um campo obrigatório ou formato incorreto)
+  if (err.name === 'SequelizeValidationError') {
+    return res.status(400).send({ error: "Dados inválidos ou incompletos." });
+  }
+
+  // 3. Qualquer outro erro não previsto (Erro estrutural no Servidor ou Banco de Dados)
+  return res.status(500).send({ error: "Erro interno do servidor." });
+});
+
+
 const port = process.env.PORT ?? 3000;
 const eraseDatabaseOnSync = process.env.ERASE_DATABASE_ON_SYNC === "true";
 
