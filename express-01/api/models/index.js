@@ -18,10 +18,10 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
 });
 
 const models = {
-  User: getUserModel(sequelize, Sequelize),
-  Message: getMessageModel(sequelize, Sequelize),
-  Tarefa: getTarefaModel(sequelize, Sequelize),
-  RefreshToken: getRefreshTokenModel(sequelize, Sequelize),
+  user: getUserModel(sequelize, { DataTypes }),
+  message: getMessageModel(sequelize, { DataTypes }),
+  tarefa: getTarefaModel(sequelize, { DataTypes }),
+  refreshToken: getRefreshTokenModel(sequelize, { DataTypes }),
 };
 
 Object.keys(models).forEach((key) => {
