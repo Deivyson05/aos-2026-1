@@ -17,7 +17,7 @@ const generateRefreshToken = async (models, user) => {
 
   const token = crypto.randomBytes(40).toString('hex');
 
-  const refreshToken = await models.RefreshToken.create({
+  const refreshToken = await models.refreshToken.create({
     token: token,
     expiryDate: expiryDate,
     userId: user.id
@@ -39,7 +39,7 @@ const createSession = async (req, res) => {
 
   try {
 
-    const user = await req.context.models.User.findByLogin(login);
+    const user = await req.context.models.user.findByLogin(login);
 
     if (!user) {
       return res.status(401).send({ error: 'Credenciais inválidas.' });

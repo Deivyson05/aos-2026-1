@@ -30,7 +30,7 @@ const getUserModel = (sequelize, { DataTypes }) => {
   });
 
   User.associate = (models) => {
-    User.hasMany(models.Message, { onDelete: "CASCADE" });
+    User.hasMany(models.message, { onDelete: "CASCADE" });
 
     User.hasMany(models.refreshToken, {
       onDelete: "CASCADE",

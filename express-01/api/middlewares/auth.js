@@ -25,7 +25,7 @@ const authMiddleware = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const user = await req.context.models.User.findByPk(decoded.id);
+    const user = await req.context.models.user.findByPk(decoded.id);
 
     if (!user) {
       return res.status(401).send({ error: 'Acesso não autorizado. Utilizador não encontrado.' });
