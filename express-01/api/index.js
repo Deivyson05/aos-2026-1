@@ -2,8 +2,9 @@ import "dotenv/config";
 import cors from "cors";
 import express from "express";
 
-import models, { sequelize } from "./models";
-import routes from "./routes";
+import models, { sequelize } from "./models/index.js";
+import * as routes from "./routes/index.js";
+import authMiddleware from "./middlewares/auth.js";
 
 const app = express();
 app.set("trust proxy", true);
@@ -13,18 +14,26 @@ app.use(express.urlencoded({ extended: true }));
 app.use(async (req, res, next) => {
   req.context = {
     models,
-    me: await models.User.findByLogin("rwieruch"),
   };
   next();
 });
+
+app.use(authMiddleware);
+
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.path} - ${req.ip}`);
   next();
 });
 
-app.use("/session", routes.session);
-app.use("/users", routes.user);
-app.use("/messages", routes.message);
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path} - ${req.ip}`);
+  next();
+});
+
+app.use("/session", routes.sessionRoute);
+app.use("/users", routes.userRoute);
+app.use("/messages", routes.messageRoute);
+app.use("/tarefas", routes.tarefaRoute);
 
 app.get("/", (req, res) => {
   res.send(
@@ -39,15 +48,12 @@ app.use((err, req, res, next) => {
     return res.status(409).send({ error: "Este registro já existe (conflito de dados)." });
   }
 
-  // 2. Erro de Validação (ex: Faltou preencher um campo obrigatório ou formato incorreto)
   if (err.name === 'SequelizeValidationError') {
     return res.status(400).send({ error: "Dados inválidos ou incompletos." });
   }
 
-  // 3. Qualquer outro erro não previsto (Erro estrutural no Servidor ou Banco de Dados)
   return res.status(500).send({ error: "Erro interno do servidor." });
 });
-
 
 const port = process.env.PORT ?? 3000;
 const eraseDatabaseOnSync = process.env.ERASE_DATABASE_ON_SYNC === "true";
@@ -69,6 +75,7 @@ const createUsersWithMessages = async () => {
     {
       username: "rwieruch",
       email: "rwieruch@email.com",
+      password: '123456',
       messages: [
         {
           text: "Published the Road to learn React",
@@ -84,6 +91,7 @@ const createUsersWithMessages = async () => {
     {
       username: "ddavids",
       email: "ddavids@email.com",
+      password: '123456',
       messages: [
         {
           text: "Happy to release ...",
