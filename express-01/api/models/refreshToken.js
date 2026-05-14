@@ -16,7 +16,7 @@ const getRefreshTokenModel = (sequelize, { DataTypes }) => {
 
   RefreshToken.associate = (models) => {
 
-    RefreshToken.belongsTo(models.User);
+    RefreshToken.belongsTo(models.user);
   };
 
   RefreshToken.verifyExpiration = (token) => {
