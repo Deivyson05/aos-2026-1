@@ -17,6 +17,8 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialectModule: require("pg"),
 });
 
+const { DataTypes } = Sequelize;
+
 const models = {
   user: getUserModel(sequelize, { DataTypes }),
   message: getMessageModel(sequelize, { DataTypes }),
