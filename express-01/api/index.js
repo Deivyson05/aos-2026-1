@@ -70,41 +70,4 @@ sequelize.sync({ force: eraseDatabaseOnSync }).then(async () => {
   );
 }).catch(err => console.error('Erro no sync:', err));;
 
-const createUsersWithMessages = async () => {
-  await models.user.create(
-    {
-      username: "rwieruch",
-      email: "rwieruch@email.com",
-      password: '123456',
-      messages: [
-        {
-          text: "Published the Road to learn React",
-        },
-      ],
-    },
-    {
-      include: [models.message],
-    },
-  );
-
-  await models.user.create(
-    {
-      username: "ddavids",
-      email: "ddavids@email.com",
-      password: '123456',
-      messages: [
-        {
-          text: "Happy to release ...",
-        },
-        {
-          text: "Published a complete ...",
-        },
-      ],
-    },
-    {
-      include: [models.message],
-    },
-  );
-};
-
 export default app;
