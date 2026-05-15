@@ -68,7 +68,7 @@ sequelize.sync({ force: eraseDatabaseOnSync }).then(async () => {
       "Express-01 app listening on port " + port + "!\n" + process.env.MESSAGE,
     ),
   );
-});
+}).catch(err => console.error('Erro no sync:', err));;
 
 const createUsersWithMessages = async () => {
   await models.user.create(
